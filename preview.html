@@ -1,0 +1,1206 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>README Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f6f8fa;
+            color: #24292f;
+            line-height: 1.6;
+        }
+        h1 { border-bottom: 1px solid #d0d7de; padding-bottom: 16px; }
+        h2 { border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-top: 24px; }
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 85%;
+        }
+        pre {
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        pre code { background: none; padding: 0; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 16px 0;
+        }
+        th, td {
+            border: 1px solid #d0d7de;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th { background: #f6f8fa; }
+        tr:nth-child(even) { background: #f6f8fa; }
+        blockquote {
+            border-left: 4px solid #d0d7de;
+            padding-left: 16px;
+            color: #57606a;
+            margin: 16px 0;
+        }
+        img { max-width: 100%; }
+        hr { border: none; border-top: 1px solid #d0d7de; margin: 24px 0; }
+        details {
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        summary { cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div align="center">
+
+# 🚀 CentOS 订单队列服务器
+
+**基于 Flask 的订单队列管理服务 | 飞书表格深度集成**
+
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.0.3-green?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-Internal-red)]()
+[![API](https://img.shields.io/badge/API-20%20Endpoints-orange)]()
+
+[功能特性](#-功能特性) • [快速开始](#-快速开始) • [API文档](#-api-文档) • [部署](#-部署)
+
+</div>
+
+<hr />
+<h2 id="_1">📖 目录</h2>
+<ul>
+<li><a href="#-功能特性">功能特性</a></li>
+<li><a href="#-项目结构">项目结构</a></li>
+<li><a href="#-快速开始">快速开始</a></li>
+<li><a href="#-api-文档">API 文档</a></li>
+<li><a href="#一已认证账户接口-authorized">已认证账户接口</a></li>
+<li><a href="#二未认证账户接口-unauthorized">未认证账户接口</a></li>
+<li><a href="#offline">离线账户接口</a></li>
+<li><a href="#三订单接口-orders">订单接口</a></li>
+<li><a href="#四截图接口-screenshots">截图接口</a></li>
+<li><a href="#-数据模型">数据模型</a></li>
+<li><a href="#️-配置说明">配置说明</a></li>
+<li><a href="#-业务逻辑">业务逻辑</a></li>
+<li><a href="#-部署">部署指南</a></li>
+</ul>
+<hr />
+<h2 id="_2">✨ 功能特性</h2>
+<table>
+<tr>
+<td width="50%">
+
+### 📦 订单队列管理
+- 从飞书表格加载订单到内存队列
+- 支持多客户端并发获取
+- 自动过滤已处理订单
+- 随机生成美式姓名电话
+
+</td>
+<td width="50%">
+
+### 👤 账户队列管理
+- **Authorized**: 已认证账户队列
+- **Unauthorized**: 未认证账户队列
+- 邮箱级别去重机制
+- 支持手动加载指定账户
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📸 终端截图同步
+- 多终端截图上传
+- 内存缓存最新截图
+- 客户端轮询获取
+- 支持缓存清理
+
+</td>
+<td width="50%">
+
+### 🔗 飞书 API 集成
+- 自动 Token 刷新机制
+- 表格数据读取/写入
+- 流程追踪更新
+- 多表格支持
+
+</td>
+</tr>
+</table>
+
+<hr />
+<h2 id="_3">📁 项目结构</h2>
+<pre class="codehilite"><code>📦 CentOSVersionComfirmOrder/
+├── 📄 app.py                 # Flask 应用入口
+├── 📄 config.py              # 配置文件
+├── 📄 routes.py              # 路由定义
+├── 📄 models.py              # 数据模型
+├── 📄 order_manager.py       # 订单队列管理
+├── 📄 account_manager.py     # 账户队列管理
+├── 📄 screenshot_manager.py  # 截图缓存管理
+├── 📄 feishu_api.py          # 飞书 API 封装
+├── 📄 token_manager.py       # Token 自动刷新
+├── 📄 requirements.txt       # Python 依赖
+└── 📄 README.md              # 项目文档
+</code></pre>
+
+<hr />
+<h2 id="_4">🚀 快速开始</h2>
+<h3 id="_5">安装依赖</h3>
+<pre class="codehilite"><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+
+<h3 id="_6">配置飞书凭证</h3>
+<p>编辑 <code>config.py</code>：</p>
+<pre class="codehilite"><code class="language-python">FEISHU_APP_ID = &quot;your_app_id&quot;
+FEISHU_APP_SECRET = &quot;your_app_secret&quot;
+</code></pre>
+
+<h3 id="_7">启动服务</h3>
+<pre class="codehilite"><code class="language-bash">python app.py
+</code></pre>
+
+<div align="center">
+
+
+<pre class="codehilite"><code>==================================================
+订单队列服务器（支持指定表格加载版 + 未认证账户版）启动
+本地访问: http://127.0.0.1:5000
+==================================================
+</code></pre>
+
+
+
+</div>
+
+<hr />
+<h2 id="api">📚 API 文档</h2>
+<h3 id="_8">一、已认证账户接口</h3>
+<blockquote>
+<p>用于管理 J 列标记为 <code>"该号是0.99"</code> 的账户</p>
+</blockquote>
+<table>
+<tr>
+<th width="25%">接口</th>
+<th width="15%">方法</th>
+<th width="60%">描述</th>
+</tr>
+<tr>
+<td><code>/load_authorized_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>加载所有已认证账户到队列</td>
+</tr>
+<tr>
+<td><code>/get_authorized_account</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>获取一个已认证账户</td>
+</tr>
+<tr>
+<td><code>/get_authorized_account_status</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>查看队列状态</td>
+</tr>
+<tr>
+<td><code>/load_single_authorized_account</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>手动加载指定账户</td>
+</tr>
+<tr>
+<td><code>/reset_authorized_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>重置队列</td>
+</tr>
+</table>
+
+<details>
+<summary><b>📋 接口详情</b></summary>
+
+#### 1.1 加载已认证账户
+
+
+<pre class="codehilite"><code class="language-http">GET /load_authorized_accounts
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;已认证账户表格加载完成&quot;,
+    &quot;total_loaded_accounts&quot;: 50,
+    &quot;current_account_queue_size&quot;: 50
+}
+</code></pre>
+
+
+
+---
+
+#### 1.2 获取一个已认证账户
+
+
+<pre class="codehilite"><code class="language-http">GET /get_authorized_account
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;account&quot;: {
+        &quot;row_num&quot;: &quot;2&quot;,
+        &quot;sheetid&quot;: &quot;3eb130&quot;,
+        &quot;spreadsheet_token&quot;: &quot;ZmTWwo0VHiOXakk5M3PcEOKonzb&quot;,
+        &quot;email_account&quot;: &quot;user@example.com&quot;,
+        &quot;email_password&quot;: &quot;password123&quot;,
+        &quot;env&quot;: &quot;production&quot;,
+        &quot;proxy_address&quot;: &quot;192.168.1.1:8080&quot;,
+        &quot;window_id&quot;: &quot;window_001&quot;
+    },
+    &quot;remaining_accounts&quot;: 49
+}
+</code></pre>
+
+
+
+---
+
+#### 1.3 查看队列状态
+
+
+<pre class="codehilite"><code class="language-http">GET /get_authorized_account_status
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;queue_size&quot;: 50,
+    &quot;is_empty&quot;: false
+}
+</code></pre>
+
+
+
+---
+
+#### 1.4 手动加载指定账户
+
+
+<pre class="codehilite"><code class="language-http">GET /load_single_authorized_account?sheetid=3eb130&amp;spreadsheetToken=ZmTWwo0VHiOXakk5M3PcEOKonzb&amp;row_num=5
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `sheetid` | string | ✅ | 飞书表格 sheet ID |
+| `spreadsheetToken` | string | ✅ | 飞书表格 token |
+| `row_num` | string | ✅ | 要加载的行号 |
+
+---
+
+#### 1.5 重置队列
+
+
+<pre class="codehilite"><code class="language-http">GET /reset_authorized_accounts
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Authorized账户队列和已加载邮箱记录已重置&quot;
+}
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h3 id="_9">二、未认证账户接口</h3>
+<blockquote>
+<p>用于管理 J 列<strong>不是</strong> <code>"该号是0.99"</code> 的账户</p>
+</blockquote>
+<table>
+<tr>
+<th width="25%">接口</th>
+<th width="15%">方法</th>
+<th width="60%">描述</th>
+</tr>
+<tr>
+<td><code>/load_unauthorized_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>加载所有未认证账户到队列</td>
+</tr>
+<tr>
+<td><code>/get_unauthorized_account</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>获取一个未认证账户</td>
+</tr>
+<tr>
+<td><code>/get_unauthorized_account_status</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>查看队列状态</td>
+</tr>
+<tr>
+<td><code>/update_process_tracing_column</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>更新流程追踪列（J列）</td>
+</tr>
+<tr>
+<td><code>/reset_unauthorized_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>重置队列</td>
+</tr>
+</table>
+
+<details>
+<summary><b>📋 接口详情</b></summary>
+
+#### 2.1 加载未认证账户
+
+
+<pre class="codehilite"><code class="language-http">GET /load_unauthorized_accounts
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;固定未认证账户表格加载完成&quot;,
+    &quot;total_loaded_accounts&quot;: 100,
+    &quot;current_account_queue_size&quot;: 100
+}
+</code></pre>
+
+
+
+---
+
+#### 2.2 获取一个未认证账户
+
+
+<pre class="codehilite"><code class="language-http">GET /get_unauthorized_account
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;account&quot;: {
+        &quot;row_num&quot;: &quot;3&quot;,
+        &quot;sheetid&quot;: &quot;3eb130&quot;,
+        &quot;spreadsheet_token&quot;: &quot;ZmTWwo0VHiOXakk5M3PcEOKonzb&quot;,
+        &quot;email_account&quot;: &quot;newuser@example.com&quot;,
+        &quot;email_password&quot;: &quot;pass456&quot;,
+        &quot;env&quot;: &quot;development&quot;,
+        &quot;proxy_address&quot;: &quot;10.0.0.1:3128&quot;,
+        &quot;window_id&quot;: &quot;window_002&quot;
+    },
+    &quot;remaining_accounts&quot;: 99
+}
+</code></pre>
+
+
+
+---
+
+#### 2.3 查看队列状态
+
+
+<pre class="codehilite"><code class="language-http">GET /get_unauthorized_account_status
+</code></pre>
+
+
+
+---
+
+#### 2.4 更新流程追踪列
+
+
+<pre class="codehilite"><code class="language-http">GET /update_process_tracing_column?sheetid=3eb130&amp;spreadsheettoken=ZmTWwo0VHiOXakk5M3PcEOKonzb&amp;row_num=2&amp;content=已处理
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `sheetid` | string | ✅ | 飞书表格 sheet ID |
+| `spreadsheettoken` | string | ✅ | 飞书表格 token |
+| `row_num` | string | ✅ | 要更新的行号 |
+| `content` | string | ✅ | 要写入的内容 |
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;流程追踪列内容更新成功&quot;,
+    &quot;target_cell&quot;: &quot;3eb130!J2:J2&quot;,
+    &quot;written_content&quot;: &quot;已处理&quot;
+}
+</code></pre>
+
+
+
+---
+
+#### 2.5 重置队列
+
+
+<pre class="codehilite"><code class="language-http">GET /reset_unauthorized_accounts
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h3 id="offline">二.5、离线账户接口</h3>
+<blockquote>
+<p>用于管理 J 列标记为 <code>"使用过程中被弹出"</code> 的账户</p>
+</blockquote>
+<table>
+<tr>
+<th width="25%">接口</th>
+<th width="15%">方法</th>
+<th width="60%">描述</th>
+</tr>
+<tr>
+<td><code>/load_offline_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>加载所有离线账户到队列</td>
+</tr>
+<tr>
+<td><code>/load_offline_accounts_from</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>加载指定表格离线账户</td>
+</tr>
+<tr>
+<td><code>/get_offline_account</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>获取一个离线账户</td>
+</tr>
+<tr>
+<td><code>/get_offline_account_status</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>查看队列状态</td>
+</tr>
+<tr>
+<td><code>/reset_offline_accounts</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>重置队列</td>
+</tr>
+</table>
+
+<details>
+<summary><b>📋 接口详情</b></summary>
+
+#### 2.6 加载所有离线账户
+
+
+<pre class="codehilite"><code class="language-http">GET /load_offline_accounts
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;离线账户表格加载完成&quot;,
+    &quot;total_loaded_accounts&quot;: 30,
+    &quot;current_account_queue_size&quot;: 30
+}
+</code></pre>
+
+
+
+---
+
+#### 2.7 加载指定表格离线账户
+
+
+<pre class="codehilite"><code class="language-http">GET /load_offline_accounts_from?sheetid=3eb130&amp;spreadsheetToken=ZmTWwo0VHiOXakk5M3PcEOKonzb
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `sheetid` | string | ✅ | 飞书表格 sheet ID |
+| `spreadsheetToken` | string | ✅ | 飞书表格 token |
+
+---
+
+#### 2.8 获取一个离线账户
+
+
+<pre class="codehilite"><code class="language-http">GET /get_offline_account
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;account&quot;: {
+        &quot;row_num&quot;: &quot;5&quot;,
+        &quot;sheetid&quot;: &quot;3eb130&quot;,
+        &quot;spreadsheet_token&quot;: &quot;ZmTWwo0VHiOXakk5M3PcEOKonzb&quot;,
+        &quot;email_account&quot;: &quot;offline@example.com&quot;,
+        &quot;email_password&quot;: &quot;pass789&quot;,
+        &quot;env&quot;: &quot;production&quot;,
+        &quot;proxy_address&quot;: &quot;192.168.1.2:8080&quot;,
+        &quot;window_id&quot;: &quot;window_003&quot;
+    },
+    &quot;remaining_accounts&quot;: 29
+}
+</code></pre>
+
+
+
+---
+
+#### 2.9 查看队列状态
+
+
+<pre class="codehilite"><code class="language-http">GET /get_offline_account_status
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;queue_size&quot;: 30,
+    &quot;is_empty&quot;: false
+}
+</code></pre>
+
+
+
+---
+
+#### 2.10 重置队列
+
+
+<pre class="codehilite"><code class="language-http">GET /reset_offline_accounts
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Offline账户队列和已加载邮箱记录已重置&quot;
+}
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h3 id="_10">三、订单接口</h3>
+<table>
+<tr>
+<th width="25%">接口</th>
+<th width="15%">方法</th>
+<th width="60%">描述</th>
+</tr>
+<tr>
+<td><code>/load_order_from</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>从指定表格加载订单</td>
+</tr>
+<tr>
+<td><code>/get_order</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>获取一个订单</td>
+</tr>
+<tr>
+<td><code>/order_status</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>查看订单队列状态</td>
+</tr>
+<tr>
+<td><code>/update_order_window_num</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>更新订单窗口号（N列）</td>
+</tr>
+</table>
+
+<details>
+<summary><b>📋 接口详情</b></summary>
+
+#### 3.1 加载指定表格订单
+
+
+<pre class="codehilite"><code class="language-http">GET /load_order_from?sheetid=e776cc&amp;spreadsheetToken=YCDPwawH8imUcHklVR9cXbL5nlh
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `sheetid` | string | ✅ | 飞书表格 sheet ID |
+| `spreadsheetToken` | string | ✅ | 飞书表格 token |
+
+---
+
+#### 3.2 获取一个订单
+
+
+<pre class="codehilite"><code class="language-http">GET /get_order
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;order&quot;: {
+        &quot;row_num&quot;: &quot;2&quot;,
+        &quot;sheetid&quot;: &quot;e776cc&quot;,
+        &quot;spreadsheet_token&quot;: &quot;YCDPwawH8imUcHklVR9cXbL5nlh&quot;,
+        &quot;order_id&quot;: &quot;ORD123456&quot;,
+        &quot;link&quot;: &quot;https://example.com/product/123&quot;,
+        &quot;sku&quot;: {
+            &quot;sku-color&quot;: &quot;Red&quot;,
+            &quot;sku-size&quot;: &quot;M&quot;
+        },
+        &quot;first_name&quot;: &quot;Emma&quot;,
+        &quot;last_name&quot;: &quot;Smith&quot;,
+        &quot;address&quot;: &quot;123 Main St&quot;,
+        &quot;phone&quot;: &quot;5551234567&quot;,
+        &quot;city&quot;: &quot;New York&quot;,
+        &quot;state&quot;: &quot;NY&quot;,
+        &quot;zip_code&quot;: &quot;10001&quot;,
+        &quot;window_num&quot;: &quot;&quot;
+    },
+    &quot;remaining&quot;: 149
+}
+</code></pre>
+
+
+
+---
+
+#### 3.3 查看订单队列状态
+
+
+<pre class="codehilite"><code class="language-http">GET /order_status
+</code></pre>
+
+
+
+---
+
+#### 3.4 更新订单窗口号
+
+
+<pre class="codehilite"><code class="language-http">GET /update_order_window_num?sheetid=e776cc&amp;spreadsheettoken=YCDPwawH8imUcHklVR9cXbL5nlh&amp;row_num=2&amp;window_num=W001
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `sheetid` | string | ✅ | 飞书表格 sheet ID |
+| `spreadsheettoken` | string | ✅ | 飞书表格 token |
+| `row_num` | string | ✅ | 要更新的行号 |
+| `window_num` | string | ✅ | 窗口号内容 |
+
+</details>
+
+<hr />
+<h3 id="_11">四、截图接口</h3>
+<table>
+<tr>
+<th width="25%">接口</th>
+<th width="15%">方法</th>
+<th width="60%">描述</th>
+</tr>
+<tr>
+<td><code>/upload_screenshot</code></td>
+<td><img src="https://img.shields.io/badge/POST-blue" /></td>
+<td>上传终端截图</td>
+</tr>
+<tr>
+<td><code>/get_all_latest_screenshots</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>获取所有最新截图</td>
+</tr>
+<tr>
+<td><code>/clear_screenshot_cache</code></td>
+<td><img src="https://img.shields.io/badge/GET-green" /></td>
+<td>清空截图缓存</td>
+</tr>
+</table>
+
+<details>
+<summary><b>📋 接口详情</b></summary>
+
+#### 4.1 上传截图
+
+
+<pre class="codehilite"><code class="language-http">POST /upload_screenshot
+Content-Type: application/json
+</code></pre>
+
+
+
+**请求体：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;terminal_id&quot;: &quot;terminal_001&quot;,
+    &quot;screenshot_base64&quot;: &quot;iVBORw0KGgoAAAANSUhEUgAA...&quot;,
+    &quot;update_time&quot;: &quot;2024-01-15 10:30:00&quot;
+}
+</code></pre>
+
+
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|:----:|------|
+| `terminal_id` | string | ✅ | 终端唯一标识 |
+| `screenshot_base64` | string | ✅ | 截图的 Base64 编码 |
+| `update_time` | string | ✅ | 截图更新时间 |
+
+---
+
+#### 4.2 获取所有最新截图
+
+
+<pre class="codehilite"><code class="language-http">GET /get_all_latest_screenshots
+</code></pre>
+
+
+
+**响应示例：**
+
+
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: true,
+    &quot;screenshot_count&quot;: 3,
+    &quot;screenshots&quot;: [
+        {
+            &quot;terminal_id&quot;: &quot;terminal_001&quot;,
+            &quot;screenshot_base64&quot;: &quot;iVBORw0KGgo...&quot;,
+            &quot;update_time&quot;: &quot;2024-01-15 10:30:00&quot;
+        }
+    ],
+    &quot;server_time&quot;: &quot;2024-01-15 10:32:00&quot;
+}
+</code></pre>
+
+
+
+---
+
+#### 4.3 清空截图缓存
+
+
+<pre class="codehilite"><code class="language-http">GET /clear_screenshot_cache
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h2 id="_12">🗃️ 数据模型</h2>
+<h3 id="order">Order 订单模型</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">字段</th>
+<th style="text-align: center;">列</th>
+<th style="text-align: center;">类型</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>row_num</code></td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">行号</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sheetid</code></td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">飞书表格 sheet ID</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spreadsheet_token</code></td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">飞书表格 token</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>order_id</code></td>
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">订单 ID</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>link</code></td>
+<td style="text-align: center;">E</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">商品链接 URL</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sku_color</code></td>
+<td style="text-align: center;">F</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">SKU 颜色</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sku_size</code></td>
+<td style="text-align: center;">F</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">SKU 尺寸</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>first_name</code></td>
+<td style="text-align: center;">G</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">名</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>last_name</code></td>
+<td style="text-align: center;">H</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">姓</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>address</code></td>
+<td style="text-align: center;">I</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">详细地址</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>phone</code></td>
+<td style="text-align: center;">J</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">联系电话</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>city</code></td>
+<td style="text-align: center;">K</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">城市</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>state</code></td>
+<td style="text-align: center;">L</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">州</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>zip_code</code></td>
+<td style="text-align: center;">M</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">邮编</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>window_num</code></td>
+<td style="text-align: center;">N</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">窗口号</td>
+</tr>
+</tbody>
+</table>
+<h3 id="account">Account 账户模型</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">字段</th>
+<th style="text-align: center;">列</th>
+<th style="text-align: center;">类型</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>row_num</code></td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">行号</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sheetid</code></td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">飞书表格 sheet ID</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spreadsheet_token</code></td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">飞书表格 token</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>email_account</code></td>
+<td style="text-align: center;">D</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">邮箱账号（唯一标识）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>email_password</code></td>
+<td style="text-align: center;">E</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">邮箱密码</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>env</code></td>
+<td style="text-align: center;">F</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">环境</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>proxy_address</code></td>
+<td style="text-align: center;">G</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">代理地址</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>window_id</code></td>
+<td style="text-align: center;">H</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: left;">窗口 ID</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_13">⚙️ 配置说明</h2>
+<details>
+<summary><b>🔧 config.py 配置项</b></summary>
+
+
+<pre class="codehilite"><code class="language-python"># 服务配置
+FLASK_HOST = &quot;0.0.0.0&quot;    # 监听地址
+FLASK_PORT = 5000          # 服务端口
+FLASK_DEBUG = False        # 调试模式
+
+# 飞书凭证
+FEISHU_APP_ID = &quot;xxx&quot;      # 飞书应用 ID
+FEISHU_APP_SECRET = &quot;xxx&quot;  # 飞书应用密钥
+
+# 表格范围
+FEISHU_RANGE_STR = &quot;A:N&quot;   # 订单表格范围
+FEISHU_ACCOUNT_RANGE_STR = &quot;A:H&quot;  # 账户表格范围
+
+# 固定账户表格列表
+FEISHU_FIXED_SHEETS = [
+    {&quot;sheet_id&quot;: &quot;3eb130&quot;, &quot;spreadsheet_token&quot;: &quot;xxx&quot;},
+    {&quot;sheet_id&quot;: &quot;253571&quot;, &quot;spreadsheet_token&quot;: &quot;xxx&quot;},
+    # ...
+]
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h2 id="_14">🧠 业务逻辑</h2>
+<h3 id="_15">订单加载流程</h3>
+<pre class="codehilite"><code>┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   飞书表格读取   │ ──▶│  过滤 N列为空   │ ──▶│  每行复制5份   │
+│   (A-N列数据)   │    │  (未处理订单)   │    │  加入队列      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                                      │
+                                                      ▼
+                                              ┌─────────────────┐
+                                              │ 生成随机美式    │
+                                              │ 姓名和电话号码  │
+                                              └─────────────────┘
+</code></pre>
+
+<h3 id="_16">账户分类逻辑</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">队列类型</th>
+<th style="text-align: left;">过滤条件</th>
+<th style="text-align: left;">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Authorized</strong></td>
+<td style="text-align: left;">J 列 = <code>"该号是0.99"</code></td>
+<td style="text-align: left;">已认证账户，可直接使用</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Unauthorized</strong></td>
+<td style="text-align: left;">J 列 ≠ <code>"该号是0.99"</code></td>
+<td style="text-align: left;">未认证账户，需要注册流程</td>
+</tr>
+</tbody>
+</table>
+<h3 id="token">Token 自动刷新</h3>
+<pre class="codehilite"><code>┌────────────────────────────────────────────────────────────┐
+│                    飞书 Token 管理流程                      │
+├────────────────────────────────────────────────────────────┤
+│  1. 后台线程每 30 分钟检查 Token 有效期                     │
+│  2. 有效期 &lt; 30 分钟时自动刷新                              │
+│  3. 线程锁保证并发安全                                      │
+│  4. 失败时自动重试                                          │
+└────────────────────────────────────────────────────────────┘
+</code></pre>
+
+<hr />
+<h2 id="_17">🚢 部署</h2>
+<h3 id="gunicorn">使用 Gunicorn</h3>
+<pre class="codehilite"><code class="language-bash">gunicorn -w 4 -b 0.0.0.0:5000 app:app
+</code></pre>
+
+<h3 id="systemd">Systemd 服务</h3>
+<details>
+<summary><b>📄 创建服务文件</b></summary>
+
+
+<pre class="codehilite"><code class="language-bash">sudo nano /etc/systemd/system/order-server.service
+</code></pre>
+
+
+
+
+<pre class="codehilite"><code class="language-ini">[Unit]
+Description=Order Queue Server
+After=network.target
+
+[Service]
+User=your_user
+WorkingDirectory=/path/to/CentOSVersionComfirmOrder
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+
+
+**启动服务：**
+
+
+<pre class="codehilite"><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl start order-server
+sudo systemctl enable order-server
+</code></pre>
+
+
+
+</details>
+
+<hr />
+<h2 id="_18">⚠️ 错误处理</h2>
+<p>所有接口返回统一格式：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">状态码</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>200</code></td>
+<td style="text-align: left;">请求成功</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>400</code></td>
+<td style="text-align: left;">参数缺失或格式错误</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>404</code></td>
+<td style="text-align: left;">资源不存在（如队列为空）</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>500</code></td>
+<td style="text-align: left;">服务器内部错误</td>
+</tr>
+</tbody>
+</table>
+<p><strong>错误响应格式：</strong></p>
+<pre class="codehilite"><code class="language-json">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;错误描述信息&quot;
+}
+</code></pre>
+
+<hr />
+<h2 id="_19">📦 依赖版本</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">包名</th>
+<th style="text-align: left;">版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Flask</td>
+<td style="text-align: left;">2.0.3</td>
+</tr>
+<tr>
+<td style="text-align: left;">requests</td>
+<td style="text-align: left;">2.27.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">gunicorn</td>
+<td style="text-align: left;">21.2.0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<div align="center">
+
+**Made with ❤️ for internal use**
+
+</div>
+</body>
+</html>
