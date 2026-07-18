@@ -1,680 +1,495 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 接口文档</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>飞书表格读写服务器 - API文档</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-            color: #fff;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-        .header p {
-            color: #8892b0;
-            font-size: 1.1rem;
-        }
-        .server-info {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .server-info .server-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .server-info .server-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .server-info .server-label {
-            color: #8892b0;
-            font-size: 0.9rem;
-        }
-        .server-info code {
-            background: rgba(0,210,255,0.2);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 1rem;
-            color: #00d2ff;
-        }
-        .server-info .local code {
-            background: rgba(73, 204, 144, 0.2);
-            color: #49cc90;
-        }
-        .section {
-            margin-bottom: 40px;
-        }
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-        }
-        .section-title .icon {
-            font-size: 1.5rem;
-            margin-right: 12px;
-        }
-        .section-title h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 16px;
-        }
-        .api-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-        .api-card:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(0,210,255,0.5);
-            transform: translateY(-2px);
-        }
-        .api-card .method {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        .method-get {
-            background: rgba(97, 175, 239, 0.2);
-            color: #61affe;
-        }
-        .method-post {
-            background: rgba(73, 204, 144, 0.2);
-            color: #49cc90;
-        }
-        .api-card .name {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #fff;
-        }
-        .api-card .desc {
-            font-size: 0.85rem;
-            color: #8892b0;
-            margin-bottom: 12px;
-        }
-        .api-card .url-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .api-card .url-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .api-card .url-label {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 3px;
-            flex-shrink: 0;
-            min-width: 45px;
-            text-align: center;
-        }
-        .url-label.local {
-            background: rgba(73, 204, 144, 0.2);
-            color: #49cc90;
-        }
-        .url-label.server {
-            background: rgba(0,210,255,0.2);
-            color: #00d2ff;
-        }
-        .api-card .url {
-            background: rgba(0,0,0,0.3);
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.8rem;
-            word-break: break-all;
-            flex: 1;
-        }
-        .api-card .url a {
-            color: #00d2ff;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .api-card .url a:hover {
-            color: #fff;
-            text-decoration: underline;
-        }
-        .api-card .url.local-url a {
-            color: #49cc90;
-        }
-        .params {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: #ffd93d;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: #8892b0;
-        }
-        .footer a {
-            color: #00d2ff;
-            text-decoration: none;
-        }
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            .api-grid {
-                grid-template-columns: 1fr;
-            }
-            .server-info .server-row {
-                flex-direction: column;
-            }
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0f0c29 0%,
+          #302b63 50%,
+          #24243e 100%
+        );
+        color: #e0e0e0;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .header {
+        text-align: center;
+        padding: 40px 0 30px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 40px;
+      }
+      .header h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+      }
+      .header p {
+        color: #888;
+        font-size: 1.1rem;
+      }
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(0, 210, 255, 0.2);
+      }
+      .section-title .icon {
+        font-size: 1.6rem;
+      }
+      .api-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 20px;
+      }
+      .api-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+      .api-card:hover {
+        border-color: rgba(0, 210, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
+      }
+      .api-card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .method {
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: monospace;
+      }
+      .method-get {
+        background: rgba(40, 200, 100, 0.2);
+        color: #28c864;
+        border: 1px solid #28c864;
+      }
+      .method-post {
+        background: rgba(240, 180, 0, 0.2);
+        color: #f0b400;
+        border: 1px solid #f0b400;
+      }
+      .api-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+      }
+      .api-desc {
+        color: #aaa;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+      }
+      .api-params {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+      }
+      .api-params strong {
+        color: #00d2ff;
+      }
+      .api-params code {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+        color: #f0b400;
+      }
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-clickable {
+        background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+        color: #fff;
+      }
+      .btn-clickable:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+      }
+      .btn-disabled {
+        background: rgba(255, 255, 255, 0.1);
+        color: #666;
+        cursor: not-allowed;
+      }
+      .btn-copy {
+        background: rgba(255, 255, 255, 0.1);
+        color: #aaa;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .btn-copy:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-click {
+        background: rgba(40, 200, 100, 0.2);
+        color: #28c864;
+      }
+      .badge-param {
+        background: rgba(240, 180, 0, 0.2);
+        color: #f0b400;
+      }
+      .result-area {
+        margin-top: 12px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        border-radius: 6px;
+        padding: 10px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #00ff88;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+      }
+      .result-area.show {
+        display: block;
+      }
+      .footer {
+        text-align: center;
+        padding: 30px 0;
+        color: #666;
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 40px;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>API 接口文档</h1>
-            <p>订单队列服务器 - 接口列表</p>
-        </div>
-        
-        <div class="server-info">
-            <div class="server-row">
-                <div class="server-item local">
-                    <span class="server-label">本地访问：</span>
-                    <code>http://127.0.0.1:5000</code>
-                </div>
-                <div class="server-item">
-                    <span class="server-label">服务器访问：</span>
-                    <code>http://112.74.43.109:5000</code>
-                </div>
-            </div>
-        </div>
+      <div class="header">
+        <h1>飞书表格读写服务器</h1>
+        <p>API接口文档 - 点击按钮直接调用</p>
+      </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">🔐</span>
-                <h2>Authorized Accounts（已认证账户）</h2>
-            </div>
-            <div class="api-grid">
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载已认证账户</div>
-                    <div class="desc">从飞书表格加载已认证账户到队列</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_authorized_accounts" target="_blank">http://127.0.0.1:5000/load_authorized_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_authorized_accounts" target="_blank">http://112.74.43.109:5000/load_authorized_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取一个已认证账户</div>
-                    <div class="desc">从队列获取一个已认证账户数据</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_authorized_account" target="_blank">http://127.0.0.1:5000/get_authorized_account</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_authorized_account" target="_blank">http://112.74.43.109:5000/get_authorized_account</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">查看队列状态</div>
-                    <div class="desc">查看已认证账户队列状态</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_authorized_account_status" target="_blank">http://127.0.0.1:5000/get_authorized_account_status</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_authorized_account_status" target="_blank">http://112.74.43.109:5000/get_authorized_account_status</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">手动加载指定账户</div>
-                    <div class="desc">手动加载指定行的账户数据</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_single_authorized_account?sheetid=xxx&spreadsheetToken=xxx&row_num=1" target="_blank">http://127.0.0.1:5000/load_single_authorized_account</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_single_authorized_account?sheetid=xxx&spreadsheetToken=xxx&row_num=1" target="_blank">http://112.74.43.109:5000/load_single_authorized_account</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheetToken, row_num</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">重置队列</div>
-                    <div class="desc">重置已认证账户队列和去重记录</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/reset_authorized_accounts" target="_blank">http://127.0.0.1:5000/reset_authorized_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/reset_authorized_accounts" target="_blank">http://112.74.43.109:5000/reset_authorized_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- 飞书表格读取 -->
+      <div class="section">
+        <div class="section-title">
+          <span class="icon">📖</span>
+          <h2>飞书表格读取</h2>
         </div>
+        <div class="api-grid">
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">读取表格数据</span>
+              <span class="badge badge-param">需传参</span>
+            </div>
+            <div class="api-desc">读取飞书表格指定范围的数据</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>sheetid</code>,
+              <code>spreadsheettoken</code>, <code>range</code>(可选，默认A:J)
+            </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/read_sheet_data?sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&range=A:E',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">🔓</span>
-                <h2>Unauthorized Accounts（未认证账户）</h2>
-            </div>
-            <div class="api-grid">
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载未认证账户</div>
-                    <div class="desc">从所有飞书表格加载未认证账户到队列</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_unauthorized_accounts" target="_blank">http://127.0.0.1:5000/load_unauthorized_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_unauthorized_accounts" target="_blank">http://112.74.43.109:5000/load_unauthorized_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载指定表格未认证账户</div>
-                    <div class="desc">从指定飞书表格加载未认证账户到队列</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_unauthorized_accounts_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://127.0.0.1:5000/load_unauthorized_accounts_from</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_unauthorized_accounts_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://112.74.43.109:5000/load_unauthorized_accounts_from</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheetToken</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取一个未认证账户</div>
-                    <div class="desc">从队列获取一个未认证账户数据</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_unauthorized_account" target="_blank">http://127.0.0.1:5000/get_unauthorized_account</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_unauthorized_account" target="_blank">http://112.74.43.109:5000/get_unauthorized_account</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">查看队列状态</div>
-                    <div class="desc">查看未认证账户队列状态</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_unauthorized_account_status" target="_blank">http://127.0.0.1:5000/get_unauthorized_account_status</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_unauthorized_account_status" target="_blank">http://112.74.43.109:5000/get_unauthorized_account_status</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">更新流程追踪列</div>
-                    <div class="desc">更新账户表格的流程追踪列（J列）</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/update_process_tracing_column?sheetid=xxx&spreadsheettoken=xxx&row_num=1&content=test" target="_blank">http://127.0.0.1:5000/update_process_tracing_column</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/update_process_tracing_column?sheetid=xxx&spreadsheettoken=xxx&row_num=1&content=test" target="_blank">http://112.74.43.109:5000/update_process_tracing_column</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheettoken, row_num, content</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">重置队列</div>
-                    <div class="desc">重置未认证账户队列和去重记录</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/reset_unauthorized_accounts" target="_blank">http://127.0.0.1:5000/reset_unauthorized_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/reset_unauthorized_accounts" target="_blank">http://112.74.43.109:5000/reset_unauthorized_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- 飞书表格写入 -->
+      <div class="section">
+        <div class="section-title">
+          <span class="icon">✏️</span>
+          <h2>飞书表格写入</h2>
         </div>
+        <div class="api-grid">
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">更新指定单元格</span>
+              <span class="badge badge-param">需传参</span>
+            </div>
+            <div class="api-desc">更新飞书表格任意单元格内容</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>sheetid</code>,
+              <code>spreadsheettoken</code>, <code>cell_range</code>,
+              <code>content</code>
+            </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/update_cell?sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&cell_range=253571!F2:F2&content=测试',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">🔌</span>
-                <h2>Offline Accounts（离线账户）</h2>
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">更新流程追踪J列</span>
+              <span class="badge badge-param">需传参</span>
             </div>
-            <div class="api-grid">
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载所有离线账户</div>
-                    <div class="desc">从所有飞书表格加载离线账户（J列='使用过程中被弹出'）</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_offline_accounts" target="_blank">http://127.0.0.1:5000/load_offline_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_offline_accounts" target="_blank">http://112.74.43.109:5000/load_offline_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载指定表格离线账户</div>
-                    <div class="desc">从指定飞书表格加载离线账户到队列</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_offline_accounts_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://127.0.0.1:5000/load_offline_accounts_from</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_offline_accounts_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://112.74.43.109:5000/load_offline_accounts_from</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheetToken</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取一个离线账户</div>
-                    <div class="desc">从队列获取一个离线账户数据</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_offline_account" target="_blank">http://127.0.0.1:5000/get_offline_account</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_offline_account" target="_blank">http://112.74.43.109:5000/get_offline_account</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">查看队列状态</div>
-                    <div class="desc">查看离线账户队列状态</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_offline_account_status" target="_blank">http://127.0.0.1:5000/get_offline_account_status</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_offline_account_status" target="_blank">http://112.74.43.109:5000/get_offline_account_status</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">重置队列</div>
-                    <div class="desc">重置离线账户队列和去重记录</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/reset_offline_accounts" target="_blank">http://127.0.0.1:5000/reset_offline_accounts</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/reset_offline_accounts" target="_blank">http://112.74.43.109:5000/reset_offline_accounts</a></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="api-desc">更新表格J列（流程追踪）指定行内容</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>sheetid</code>,
+              <code>spreadsheettoken</code>, <code>row_num</code>,
+              <code>content</code>
             </div>
-        </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/update_process_tracing_column?sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&row_num=2&content=已处理',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">📦</span>
-                <h2>Orders（订单）</h2>
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">更新订单窗口号N列</span>
+              <span class="badge badge-param">需传参</span>
             </div>
-            <div class="api-grid">
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">加载指定表格订单</div>
-                    <div class="desc">从指定飞书表格加载订单到队列</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/load_order_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://127.0.0.1:5000/load_order_from</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/load_order_from?sheetid=xxx&spreadsheetToken=xxx" target="_blank">http://112.74.43.109:5000/load_order_from</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheetToken</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取一个订单</div>
-                    <div class="desc">从队列获取一个订单数据</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_order" target="_blank">http://127.0.0.1:5000/get_order</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_order" target="_blank">http://112.74.43.109:5000/get_order</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">查看订单队列状态</div>
-                    <div class="desc">查看当前订单队列状态</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/order_status" target="_blank">http://127.0.0.1:5000/order_status</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/order_status" target="_blank">http://112.74.43.109:5000/order_status</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">更新订单窗口号</div>
-                    <div class="desc">更新订单表格的窗口号列（N列）</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/update_order_window_num?sheetid=xxx&spreadsheettoken=xxx&row_num=1&window_num=1" target="_blank">http://127.0.0.1:5000/update_order_window_num</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/update_order_window_num?sheetid=xxx&spreadsheettoken=xxx&row_num=1&window_num=1" target="_blank">http://112.74.43.109:5000/update_order_window_num</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：sheetid, spreadsheettoken, row_num, window_num</div>
-                </div>
+            <div class="api-desc">更新表格N列（订单窗口号）指定行内容</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>sheetid</code>,
+              <code>spreadsheettoken</code>, <code>row_num</code>,
+              <code>window_num</code>
             </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/update_order_window_num?sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&row_num=2&window_num=1001',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="section">
-            <div class="section-title">
-                <span class="icon">📸</span>
-                <h2>Screenshots（截图）</h2>
-            </div>
-            <div class="api-grid">
-                <div class="api-card">
-                    <span class="method method-post">POST</span>
-                    <div class="name">上传截图</div>
-                    <div class="desc">上传终端截图到服务器</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/upload_screenshot" target="_blank">http://127.0.0.1:5000/upload_screenshot</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/upload_screenshot" target="_blank">http://112.74.43.109:5000/upload_screenshot</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取所有截图</div>
-                    <div class="desc">获取所有终端的最新截图</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_all_latest_screenshots" target="_blank">http://127.0.0.1:5000/get_all_latest_screenshots</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_all_latest_screenshots" target="_blank">http://112.74.43.109:5000/get_all_latest_screenshots</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取终端列表</div>
-                    <div class="desc">获取所有已上传截图的终端ID列表</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_screenshot_list" target="_blank">http://127.0.0.1:5000/get_screenshot_list</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_screenshot_list" target="_blank">http://112.74.43.109:5000/get_screenshot_list</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">获取指定终端截图</div>
-                    <div class="desc">获取指定终端的最新截图</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_screenshot_by_id?terminal_id=xxx" target="_blank">http://127.0.0.1:5000/get_screenshot_by_id</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_screenshot_by_id?terminal_id=xxx" target="_blank">http://112.74.43.109:5000/get_screenshot_by_id</a></div>
-                        </div>
-                    </div>
-                    <div class="params">参数：terminal_id</div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">查看缓存状态</div>
-                    <div class="desc">查看截图缓存状态（终端数/内存占用）</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/get_screenshot_cache_status" target="_blank">http://127.0.0.1:5000/get_screenshot_cache_status</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/get_screenshot_cache_status" target="_blank">http://112.74.43.109:5000/get_screenshot_cache_status</a></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="api-card">
-                    <span class="method method-get">GET</span>
-                    <div class="name">清空截图缓存</div>
-                    <div class="desc">清空所有截图缓存</div>
-                    <div class="url-group">
-                        <div class="url-row">
-                            <span class="url-label local">本地</span>
-                            <div class="url local-url"><a href="http://127.0.0.1:5000/clear_screenshot_cache" target="_blank">http://127.0.0.1:5000/clear_screenshot_cache</a></div>
-                        </div>
-                        <div class="url-row">
-                            <span class="url-label server">服务器</span>
-                            <div class="url"><a href="http://112.74.43.109:5000/clear_screenshot_cache" target="_blank">http://112.74.43.109:5000/clear_screenshot_cache</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- 手机号队列 -->
+      <div class="section">
+        <div class="section-title">
+          <span class="icon">📱</span>
+          <h2>手机号队列</h2>
         </div>
+        <div class="api-grid">
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">加载手机号队列</span>
+              <span class="badge badge-click">可点击</span>
+            </div>
+            <div class="api-desc">从表格253571读取数据到队列</div>
+            <div class="btn-group">
+              <a
+                class="btn btn-clickable"
+                href="http://127.0.0.1:5000/load_phone_queue"
+                target="_blank"
+                >点击调用</a
+              >
+              <button
+                class="btn btn-copy"
+                onclick="copyUrl('http://127.0.0.1:5000/load_phone_queue')"
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
 
-        <div class="footer">
-            <p>订单队列服务器 API 文档 | <a href="http://127.0.0.1:5000/" target="_blank">本地访问</a> | <a href="http://112.74.43.109:5000/" target="_blank">服务器访问</a></p>
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">取出一条数据</span>
+              <span class="badge badge-click">可点击</span>
+            </div>
+            <div class="api-desc">从队列取出一条数据（FIFO），取出后移除</div>
+            <div class="btn-group">
+              <a
+                class="btn btn-clickable"
+                href="http://127.0.0.1:5000/get_phone_data"
+                target="_blank"
+                >点击调用</a
+              >
+              <button
+                class="btn btn-copy"
+                onclick="copyUrl('http://127.0.0.1:5000/get_phone_data')"
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">放回数据到队列</span>
+              <span class="badge badge-param">需传参</span>
+            </div>
+            <div class="api-desc">把未消费成功的数据放回队列</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>row_num</code>,
+              <code>sheetid</code>, <code>spreadsheettoken</code>,
+              <code>phone_number</code>, <code>sms_url</code>
+            </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/put_back_phone_data?row_num=2&sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&phone_number=6328835200&sms_url=https://xxx.com',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">写入窗口名称到F列</span>
+              <span class="badge badge-param">需传参</span>
+            </div>
+            <div class="api-desc">在指定表格F列对应行写入窗口名称</div>
+            <div class="api-params">
+              <strong>参数：</strong> <code>row_num</code>,
+              <code>sheetid</code>, <code>spreadsheettoken</code>,
+              <code>window_name</code>
+            </div>
+            <div class="btn-group">
+              <button
+                class="btn btn-copy"
+                onclick="
+                  copyUrl(
+                    'http://127.0.0.1:5000/update_window_name?row_num=2&sheetid=253571&spreadsheettoken=TX74w2JYPia8ZJk8Lmdc279vn0g&window_name=窗口1',
+                  )
+                "
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
+
+          <div class="api-card">
+            <div class="api-card-header">
+              <span class="method method-get">GET</span>
+              <span class="api-name">查看队列状态</span>
+              <span class="badge badge-click">可点击</span>
+            </div>
+            <div class="api-desc">查看手机号队列剩余数量</div>
+            <div class="btn-group">
+              <a
+                class="btn btn-clickable"
+                href="http://127.0.0.1:5000/phone_queue_status"
+                target="_blank"
+                >点击调用</a
+              >
+              <button
+                class="btn btn-copy"
+                onclick="copyUrl('http://127.0.0.1:5000/phone_queue_status')"
+              >
+                复制URL
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          飞书表格读写服务器 | 本地运行端口 5000 | 部署时请将 127.0.0.1
+          替换为服务器IP
+        </p>
+      </div>
     </div>
-</body>
+
+    <script>
+      function copyUrl(url) {
+        navigator.clipboard
+          .writeText(url)
+          .then(function () {
+            alert("URL已复制到剪贴板：\n" + url);
+          })
+          .catch(function () {
+            // 降级方案
+            var textarea = document.createElement("textarea");
+            textarea.value = url;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            alert("URL已复制到剪贴板：\n" + url);
+          });
+      }
+    </script>
+  </body>
 </html>
